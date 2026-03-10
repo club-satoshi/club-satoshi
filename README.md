@@ -1,6 +1,6 @@
 # Club Satoshi
 
-Sitio web oficial de [Club Satoshi](https://clubsatoshi.com), comunidad bitcoiner de Tucumán y el Norte Argentino. Construido con [Next.js](https://nextjs.org).
+Sitio web oficial de [Club Satoshi](https://clubsatoshi.org), comunidad bitcoiner de Tucumán y el Norte Argentino. Construido con [Next.js](https://nextjs.org).
 
 ## Primeros pasos
 
@@ -11,17 +11,17 @@ npm install
 npm run dev
 ```
 
-Abrí [http://localhost:3000](http://localhost:3000) en tu navegador.
+Abrí [http://localhost:3000](http://localhost:3000) en tu navegador para ver los cambios.
 
 ---
 
 ## Colaborar con contenido
 
-Los artículos y guías del sitio se encuentran en `content/resources/` como archivos `.mdx`. Cualquier persona puede contribuir creando o mejorando recursos educativos sobre Bitcoin.
+Los artículos y guías del sitio se gestionan en `content/resources/` mediante archivos `.mdx`. Cualquier persona puede contribuir para fortalecer la educación sobre Bitcoin en la región.
 
 ### Estructura de archivos
 
-```
+```text
 content/
 └── resources/
     ├── que-es-bitcoin.mdx
@@ -34,16 +34,16 @@ content/
 
 ### Cómo crear un nuevo artículo
 
-1. Crea un archivo `.mdx` en `content/resources/` con un nombre en minúsculas y guiones, por ejemplo: `como-funciona-el-halving.mdx`.
+1. **Crear el archivo:** En `content/resources/` con nombre en minúsculas y guiones (ej: `como-funciona-el-halving.mdx`).
 
-2. Agregá el **frontmatter** al inicio del archivo con los siguientes campos:
+2. **Configurar el Frontmatter:** Copiá y completá este bloque al inicio del archivo:
 
 ```mdx
 ---
 title: "Título del artículo"
 category: "fundamentos"       # fundamentos | guias | herramientas
-description: "Descripción breve que aparece en las tarjetas del sitio."
-date: "2026-03-01"            # formato YYYY-MM-DD
+description: "Descripción breve para las tarjetas de previsualización."
+date: "2026-03-10"            # Formato YYYY-MM-DD
 author: "Tu nombre o alias"
 type: "article"               # article | guide
 level: "beginner"             # beginner | intermediate | advanced
@@ -52,19 +52,19 @@ level: "beginner"             # beginner | intermediate | advanced
 Contenido del artículo en Markdown...
 ```
 
-3. Escribí el contenido usando Markdown estándar: títulos (`##`, `###`), listas, tablas, citas (`>`), negritas, etc.
+3. **Escribir el contenido:** Usá Markdown estándar para títulos, listas, citas y bloques de código.
 
-4. Para que aparezca listado en la sección de Recursos del sitio, agregá una tarjeta en `src/components/Resources.tsx` apuntando al `href` correspondiente.
+4. **Registro visual:** Para que el artículo aparezca en la sección de Recursos, agregá la tarjeta correspondiente en `src/components/Resources.tsx`.
 
 ### Buenas prácticas
 
-- Escribí en español argentino, con un tono didáctico y accesible.
-- Evitá jerga técnica sin explicación previa.
-- Preferí ejemplos concretos y locales cuando sea posible.
-- Revisá que el `date` del frontmatter esté actualizado.
+- **Tono:** Didáctico, accesible y con impronta local (Tucumán).
+- **Soberanía:** Priorizá siempre soluciones no custodiales y de código abierto.
+- **Claridad:** Explicá términos técnicos (UTXO, Mempool, Hash, etc.) antes de usarlos.
+- **Actualización:** Verificá que la fecha (`date`) sea la del día de creación o última edición.
 
 ---
 
 ## Despliegue
 
-El sitio se despliega automáticamente en [Vercel](https://vercel.com) desde la rama `main`.
+El sitio se despliega automáticamente en **Vercel** tras cada push a la rama `main`.
