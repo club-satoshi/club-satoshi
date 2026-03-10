@@ -1,0 +1,246 @@
+---
+title: "¿Cómo colaborar con Club Satoshi?"
+category: "fundamentos"
+description: "Guía paso a paso para que cualquier persona pueda contribuir con artículos y contenido al proyecto, sin necesidad de conocimientos técnicos."
+date: "2026-03-10"
+author: "Club Satoshi"
+type: "guide"
+level: "beginner"
+---
+
+## ¿Qué tipo de contenido podés aportar?
+
+Aceptamos muchos tipos de contenido. Acá van algunas ideas:
+
+- **Artículos educativos:** Explicaciones sobre conceptos de Bitcoin para principiantes.
+- **Tutoriales:** Guías prácticas paso a paso (por ejemplo, cómo instalar una billetera).
+- **Guías:** Documentos más extensos sobre temas específicos.
+- **Experiencias personales:** Tu historia con Bitcoin, cómo lo descubriste, qué aprendiste.
+- **Tips y buenas prácticas:** Consejos útiles para el día a día con Bitcoin.
+
+### Algunos ejemplos de temas
+
+- "¿Cómo compré mis primeros satoshis?"
+- "5 errores comunes al empezar con Bitcoin"
+- "¿Qué billetera me conviene usar?"
+- "Cómo explicarle Bitcoin a mi familia"
+- "¿Qué es el halving y por qué importa?"
+- "Mi experiencia usando Lightning Network para pagar en un comercio"
+
+Si tenés una idea diferente, ¡adelante! Estamos abiertos a propuestas.
+
+---
+
+## Guía paso a paso para colaborar
+
+Vamos a usar una plataforma llamada **GitHub**. Es un sitio web donde se guardan los archivos del proyecto. No te preocupes si nunca la usaste, te explicamos todo desde cero.
+
+### Paso 1: Crear una cuenta en GitHub
+
+1. Abrí tu navegador y entrá a [github.com](https://github.com).
+2. Hacé clic en el botón **"Sign up"** (Registrarse), que está en la esquina superior derecha.
+3. Completá los datos que te piden: correo electrónico, contraseña y un nombre de usuario.
+4. Seguí las instrucciones en pantalla para verificar tu cuenta.
+5. ¡Listo! Ya tenés tu cuenta de GitHub.
+
+> 💡 **Tip:** Elegí un nombre de usuario que te identifique, puede ser tu nombre real o un apodo.
+
+### Paso 2: Encontrar el repositorio del proyecto
+
+Un **repositorio** es como una carpeta en internet donde se guardan todos los archivos del proyecto.
+
+1. Una vez que iniciaste sesión en GitHub, entrá a nuestro repositorio:
+   **[github.com/club-satoshi](https://github.com/club-satoshi/club-satoshi)**
+2. Vas a ver una página con muchas carpetas y archivos. No te asustes, solo vamos a trabajar con una carpeta específica: `content/resources/`.
+
+### Paso 3: Hacer un Fork del repositorio
+
+Un **Fork** es una copia del proyecto en tu propia cuenta de GitHub. Esto te permite hacer cambios sin afectar el proyecto original.
+
+1. En la página del repositorio, buscá el botón **"Fork"** en la parte superior derecha.
+2. Hacé clic en **"Fork"**.
+3. GitHub va a crear una copia del proyecto en tu cuenta. Vas a ver algo como: `tu-usuario/ClubSatoshi`.
+
+¡Ahora tenés tu propia copia del proyecto para trabajar tranquilamente!
+
+### Paso 4: Crear un nuevo artículo
+
+Ahora vamos a crear un archivo nuevo dentro de tu copia del proyecto.
+
+1. En tu Fork (la copia en tu cuenta), navegá hasta la carpeta `content/resources/`.
+   Para hacerlo, hacé clic en la carpeta `content` y luego en `resources`.
+2. Hacé clic en el botón **"Add file"** (Agregar archivo) y luego en **"Create new file"** (Crear archivo nuevo).
+3. En el campo del nombre del archivo, escribí el nombre de tu artículo. Usá este formato:
+   - Todo en **minúsculas**
+   - Separá las palabras con **guiones** (-)
+   - Terminá el nombre con **.mdx**
+
+   Por ejemplo: `mi-experiencia-con-bitcoin.mdx`
+
+### Paso 5: Escribir el contenido
+
+Ahora viene la parte más importante: escribir tu artículo. El archivo tiene dos partes:
+
+**Primera parte: la información del artículo (Frontmatter)**
+
+Al inicio del archivo, copiá y pegá este bloque, y completá con tus datos:
+
+```markdown
+---
+title: "El título de tu artículo"
+category: "fundamentos"
+description: "Una descripción corta de tu artículo (1 o 2 oraciones)."
+date: "2026-03-10"
+author: "Tu nombre o apodo"
+type: "article"
+level: "beginner"
+---
+```
+
+Algunos detalles sobre estos campos:
+
+| Campo | Qué poner |
+|-------|-----------|
+| `title` | El título de tu artículo, entre comillas |
+| `category` | Elegí una: `fundamentos`, `guias` o `herramientas` |
+| `description` | Una frase corta que resuma tu artículo |
+| `date` | La fecha de hoy en formato año-mes-día (ejemplo: `2026-03-10`) |
+| `author` | Tu nombre, apodo o como quieras que te identifiquen |
+| `type` | Usá `article` para artículos o `guide` para guías |
+| `level` | Nivel de dificultad: `beginner`, `intermediate` o `advanced` |
+
+**Segunda parte: el contenido**
+
+Después del bloque de información, escribí tu artículo. Podés usar formato **Markdown**, que es una forma simple de darle estilo al texto:
+
+```markdown
+## Esto es un título
+
+### Esto es un subtítulo
+
+Este es un párrafo normal. Podés escribir todo lo que quieras.
+
+**Esto es texto en negrita.**
+
+*Esto es texto en cursiva.*
+
+- Esto es una lista
+- Con varios puntos
+- Muy fácil de hacer
+
+> Esto es una cita o nota destacada.
+```
+
+No te preocupes si no queda perfecto. Nosotros te ayudamos a darle formato.
+
+### Paso 6: Guardar los cambios
+
+Una vez que terminaste de escribir:
+
+1. Bajá hasta el final de la página.
+2. Vas a ver una sección que dice **"Commit changes"** (Guardar cambios).
+3. En el campo de texto, escribí un mensaje corto que describa lo que hiciste. Por ejemplo: `Agrego artículo sobre mi experiencia con Bitcoin`.
+4. Asegurate de que esté seleccionada la opción **"Commit directly to the main branch"**.
+5. Hacé clic en el botón verde **"Commit changes"**.
+
+¡Tu artículo ya está guardado en tu copia del proyecto!
+
+### Paso 7: Crear un Pull Request
+
+Un **Pull Request** (o PR) es una forma de decirnos: *"Hice un aporte, ¿pueden revisarlo e incluirlo en el proyecto?"*
+
+1. Volvé a la página principal de tu Fork (tu copia del repositorio).
+2. Vas a ver un mensaje amarillo que dice algo como: *"This branch is 1 commit ahead..."*. Al lado, hay un botón que dice **"Contribute"** y luego **"Open pull request"**. Hacé clic ahí.
+3. Se va a abrir una página nueva. Acá podés:
+   - Ponerle un **título** a tu contribución (por ejemplo: *"Nuevo artículo: Mi experiencia con Bitcoin"*).
+   - Escribir una **descripción breve** de lo que estás enviando.
+4. Hacé clic en el botón verde **"Create pull request"**.
+
+**¡Felicitaciones!** Tu contribución fue enviada. Ahora solo queda esperar a que la revisemos.
+
+---
+
+## Ejemplo de artículo
+
+Para que te resulte más fácil, acá tenés un ejemplo completo de cómo se ve un artículo:
+
+```markdown
+---
+title: "Mi primera compra de Bitcoin"
+category: "fundamentos"
+description: "Cómo fue mi experiencia comprando satoshis por primera vez."
+date: "2026-03-10"
+author: "María"
+type: "article"
+level: "beginner"
+---
+
+## Introducción
+
+Siempre escuché hablar de Bitcoin pero nunca me animé a comprar.
+Un día decidí dar el primer paso y acá les cuento cómo fue.
+
+## ¿Por qué me decidí?
+
+Un amigo me explicó que no hace falta comprar un Bitcoin entero.
+Se pueden comprar fracciones llamadas **satoshis**. Con solo unos
+pocos pesos ya podía empezar.
+
+## Mi experiencia paso a paso
+
+1. Me descargué una billetera en el celular.
+2. Un amigo me envió unos satoshis para probar.
+3. Después compré un poco más por mi cuenta.
+
+## Lo que aprendí
+
+- No es tan difícil como parece.
+- Es importante ir de a poco y no invertir más de lo que estás
+  dispuesto a perder.
+- La comunidad de Bitcoin es muy amable con los que recién empiezan.
+
+## Conclusión
+
+Si estás dudando, mi consejo es que te animes. Empezá de a poco,
+informate y preguntá. La comunidad está para ayudar.
+```
+
+Podés usar este ejemplo como plantilla y modificarlo con tu propio contenido.
+
+---
+
+## Consejos para escribir buenos artículos
+
+No hace falta ser escritor profesional. Con seguir estos tips simples, tu artículo va a quedar genial:
+
+- **Escribí de forma clara y directa.** Imaginá que le estás explicando algo a un amigo.
+- **Usá títulos y subtítulos.** Ayudan a organizar el contenido y hacen que sea más fácil de leer.
+- **Mantené los párrafos cortos.** Tres o cuatro oraciones por párrafo es un buen número.
+- **Agregá ejemplos cuando puedas.** Los ejemplos concretos ayudan mucho a entender las ideas.
+- **Evitá la jerga técnica innecesaria.** Si usás un término técnico, explicalo brevemente.
+- **Mantené el contenido útil y práctico.** Pensá en qué le sería útil saber a alguien que recién empieza.
+- **Revisá antes de enviar.** Una leída rápida te ayuda a encontrar errores o frases confusas.
+
+---
+
+## ¿Qué sucede después de enviar tu contribución?
+
+Una vez que creaste tu Pull Request, esto es lo que pasa:
+
+1. **Los mantenedores del proyecto van a revisar tu artículo.** Somos personas reales que leemos cada contribución con atención.
+2. **Puede que te sugiramos pequeñas mejoras.** No te preocupes, es parte del proceso. Puede ser un ajuste de formato, una corrección menor o una sugerencia para hacer el texto más claro. Todo se conversa de buena onda.
+3. **Una vez aprobado, tu artículo se publica en el sitio.** Va a aparecer en la sección de Recursos de [clubsatoshi.org](https://clubsatoshi.org) para que toda la comunidad pueda leerlo.
+
+No tengas miedo de enviar tu aporte. No hay preguntas tontas ni contribuciones pequeñas. **Todo suma.**
+
+---
+
+## Mensaje final
+
+**Gracias por tomarte el tiempo de leer esta guía y por considerar colaborar con Club Satoshi.**
+
+Cada artículo, cada experiencia compartida y cada tutorial hacen que más personas puedan acceder al conocimiento sobre Bitcoin. No necesitás ser experto: tu perspectiva es valiosa.
+
+Si conocés a alguien que pueda aportar, compartile esta guía. Cuantas más voces se sumen, más fuerte es la comunidad.
+
+**Bitcoin es de todos. Este proyecto también. 🧡**
