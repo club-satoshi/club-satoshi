@@ -18,10 +18,10 @@ export default function ComerciosPage() {
 
                     <div className="animate-fade-in">
                         <h1 className="text-3xl md:text-5xl font-bold mb-4 text-secondary dark:text-white">
-                            Comercios Bitcoin en Tucumán
+                        Quiénes aceptan Bitcoin en Tucumán
                         </h1>
                         <p className="text-lg text-gray-500 dark:text-gray-400">
-                            Descubrí dónde podés gastar tus sats en la provincia. El mapa se actualiza automáticamente con nuevos comercios.
+                            Comercios, emprendimientos y proyectos locales donde ya podés pagar con sats. Descubrilos en el mapa — y si tenés el tuyo, sumalo.
                         </p>
                     </div>
 
