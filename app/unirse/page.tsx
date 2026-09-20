@@ -3,15 +3,17 @@ import { Diamond, MessageCircle } from "lucide-react";
 
 const METODOLOGIA = [
   "Enseñamos Bitcoin de persona a persona. Solo es cuestión de coordinar día, horario y lugar para reunirnos.",
-  "Nos reunimos semanalmente para seguir aprendiendo, sacarnos dudas y aportar ideas y proyectos.",
-  "Los encuentros los coordinamos por el grupo de WhatsApp.",
+  "En lo posible tratamos de mantener reuniones semanales para que todos puedan sacarse sus dudas y podamos tener un espacio de conversación frecuente. Te podes sumar a cualquier fecha.",
+  'Durante el año organizamos un par de fechas para dar nuestra charla "Bitcoin Desde Cero", para todo público, donde explicamos las bases de Bitcoin para principiantes.',
+  "Los encuentros los coordinamos por nuestro grupo de WhatsApp, son libres y gratuitos.",
+  "Si no sabes nada de Bitcoin, Club Satoshi es el espacio ideal para comenzar!",
 ];
 
 const NORMAS = [
   {
     titulo: "Somos 100% Bitcoin",
     descripcion:
-      "Compartí únicamente contenido relacionado con Bitcoin. Evitá mensajes irrelevantes, spam o publicidad no autorizada. Esto no quita que en nuestras juntadas podamos hablar de lo que sea.",
+      "Compartí únicamente contenido relacionado con Bitcoin. Evitá mensajes irrelevantes, spam o publicidad no autorizada.",
   },
   {
     titulo: "Ayuda",
@@ -31,7 +33,7 @@ const NORMAS = [
   {
     titulo: "Por último",
     descripcion:
-      "Al ingresar al grupo, comprendés y aceptás estas normas. En caso de no cumplirlas, serás advertido y/o baneado.",
+      "Nadie del Club Satoshi o en nombre del Club se va a comunicar por privado para ofrecerte algo, todo se resuelve en el chat general de la comunidad. Al ingresar al grupo, comprendés y aceptás estas normas. En caso de no cumplirlas, serás advertido y/o baneado.",
   },
 ];
 
@@ -107,7 +109,7 @@ export default function UnirsePage() {
             ¿Estás de acuerdo con estas normas?
           </p>
           <p className="text-white/80 text-lg mb-10">
-            Te damos la bienvenida a Club Satoshi.
+            Agradecemos mucho el aporte de cada uno para mantener el espacio alineado con nuestra misión.
           </p>
           <a
             href="https://chat.whatsapp.com/JbqF5ZxvJuX6XaCHkXlZIs?mode=gi_t"
