@@ -16,12 +16,28 @@ export default function Contact() {
               Somos una comunidad abierta, voluntaria y apasionada por Bitcoin.
               Conocé cómo funciona el club y unite al grupo.
             </p>
-            <Link
-              href="/unirse"
-              className="inline-flex items-center gap-2 px-8 py-4 bg-white text-primary font-bold rounded-full hover:bg-white/90 transition-all hover:scale-105 shadow-lg text-base"
-            >
-              Quiero unirme
-            </Link>
+            <div className="flex flex-col items-start gap-4">
+              <Link
+                href="/unirse"
+                className="inline-flex items-center gap-2 px-8 py-4 bg-white text-primary font-bold rounded-full hover:bg-white/90 transition-all hover:scale-105 shadow-lg text-base"
+              >
+                Quiero unirme
+              </Link>
+              <div>
+                <a
+                  href="https://getalby.com/p/clubsatoshi"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-8 py-4 border-2 border-white text-white font-bold rounded-full hover:bg-white/10 transition-all hover:scale-105 text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-primary"
+                >
+                  Apoyar la comunidad
+                  <ExternalLink className="w-4 h-4" />
+                </a>
+                <p className="mt-3 text-sm md:text-base text-white/90 leading-relaxed max-w-md">
+                  Tu aporte ayuda a costear los eventos de la comunidad: materiales, insumos y lo que haga falta.
+                </p>
+              </div>
+            </div>
           </div>
 
           {/* Columna derecha — Consultas */}
