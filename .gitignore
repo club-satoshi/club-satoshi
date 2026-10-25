@@ -42,3 +42,6 @@ next-env.d.ts
 
 # gentle-ai local agent config
 /.atl/
+
+# local copy of the original standalone P2P app, kept for side-by-side checks
+/public/p2p/
