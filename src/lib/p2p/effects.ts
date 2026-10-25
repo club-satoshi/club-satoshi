@@ -9,7 +9,8 @@ export function sendPush(
   const topic = v && v.ntfy;
   if (!topic || !/^[A-Za-z0-9_-]{8,64}$/.test(topic)) return Promise.resolve(false);
 
-  const panel = window.location.href.split("#")[0] + "#panel-cs";
+  // The panel has its own route: the notification must open it directly.
+  const panel = window.location.origin + "/p2p/panel";
   const url =
     `https://ntfy.sh/${topic}?title=${encodeURIComponent(title)}` +
     `&priority=high&tags=zap&click=${encodeURIComponent(panel)}`;

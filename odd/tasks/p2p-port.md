@@ -15,7 +15,7 @@ S3. The original app's global CSS must NOT leak into the rest of the site. It li
 
 S4. The app keeps being one page with six screens switched by state, not by routes: `home`, `amount`, `pay`, `invoice`, `wait`, `seller`. Same as the original `show()`.
 
-S5. `#panel-cs` still opens the seller panel (hash entry point), and `cs_pedido_activo` still resumes an open order after a refresh.
+S5. `/p2p/panel` (its own route) opens the seller panel, and `cs_pedido_activo` still resumes an open order after a refresh.
 
 S6. Purchasing flow is unchanged: amount 1–10 USD → seller assignment → payment method (Pesos CBU / USDT TRC-20) → invoice paste → live order status.
 
@@ -41,6 +41,7 @@ S11. No unrequested behavior changes. Where the original has a bug or an unsafe 
 | T6 | Seller panel: login, form, orders, history, admin | S8 | inline | done |
 | T7 | `app/p2p/page.tsx` route + nav entry | S1,S10 | inline | done |
 | T8 | Build + lint + side-by-side comparison against `public/p2p/app.html` | all | inline | done (visual pass pending on a real device) |
+| T9 | Move the seller entry point from `#panel-cs` to `/p2p/panel`: shared fonts layout, panel route, notification link | S5,S8 | inline | done |
 
 ## Log
 
@@ -97,3 +98,5 @@ L25. Checks: `npm run build` passes and prerenders `○ /p2p`; `npm run lint` re
 L26. Out of scope, still open for the user: Firebase Console must authorize the site domain; `next.config.mjs` has no `output: 'export'` while the deploy workflow uploads `./out`.
 
 L27. Repo hygiene before committing: `public/p2p/` is git-ignored so the duplicate reference app is never deployed, and the unused wordmark SVG was deleted.
+
+L28. Request (2026-10-25): "Hagamos que en vez de p2p#panel-cs sea /p2p/panel". The seller entry is now the route `app/p2p/panel`, which boots `P2PApp` with `initialScreen="seller"`; the hash listener and `PANEL_SECRETO` are gone. The fonts moved to `app/p2p/layout.tsx` so both routes share them, `sendPush` now links to `/p2p/panel`, and a new-order alert navigates there instead of switching screens in place. The panel route is `noindex`. Old `#panel-cs` links are not redirected: the push link was updated and no hash entry remains.

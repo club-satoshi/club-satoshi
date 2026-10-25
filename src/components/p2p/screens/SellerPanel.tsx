@@ -8,8 +8,10 @@ import { fmt, fmtDate, pad } from "@/lib/p2p/utils";
 import { available, hasData, reserved, vendorStatus } from "@/lib/p2p/vendors";
 
 interface SellerPanelProps {
-  /** false while the store is still being created. */
+  /** false until the boot finishes (store resolved or failed). */
   ready: boolean;
+  /** false when the database could not be reached. */
+  hasStore: boolean;
   myId: string | null;
   isAdmin: boolean;
   vendors: Vendor[];
@@ -111,6 +113,7 @@ function CopyButton({
 
 export default function SellerPanel({
   ready,
+  hasStore,
   myId,
   isAdmin,
   vendors,
@@ -509,7 +512,22 @@ export default function SellerPanel({
     );
   };
 
+  // The original only rendered this panel once the database was resolved, so
+  // the boot leaves the slot empty instead of claiming the panel is down.
   if (!ready) {
+    return (
+      <section className={`${s.screen} ${s.active} ${s.panel}`} id="s-seller">
+        <h2 className={s.display}>Panel de vendedores</h2>
+        <p className={s.sub}>
+          Indicá tu horario, tu saldo disponible y tus datos de cobro. Acá te van a
+          llegar los pedidos.
+        </p>
+        <div id="sellerRoot" />
+      </section>
+    );
+  }
+
+  if (!hasStore) {
     return (
       <section className={`${s.screen} ${s.active} ${s.panel}`} id="s-seller">
         <h2 className={s.display}>Panel de vendedores</h2>

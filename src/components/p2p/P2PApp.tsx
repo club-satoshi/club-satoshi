@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import s from "./p2p.module.css";
 import Faq from "./Faq";
@@ -16,7 +17,6 @@ import {
   DEFAULT_DOLAR_BLUE,
   MODO_PRUEBA,
   ORDER_KEY,
-  PANEL_SECRETO,
   QUOTE_SECONDS,
   SPREAD,
 } from "@/lib/p2p/config";
@@ -42,8 +42,14 @@ function rememberOrder(n: number | null) {
   }
 }
 
-export default function P2PApp() {
-  const [screen, setScreen] = useState<Screen>("home");
+interface P2PAppProps {
+  /** Screen the app boots into. The seller panel has its own route. */
+  initialScreen?: Screen;
+}
+
+export default function P2PApp({ initialScreen = "home" }: P2PAppProps) {
+  const router = useRouter();
+  const [screen, setScreen] = useState<Screen>(initialScreen);
   const [amount, setAmount] = useState(1);
   const [method, setMethod] = useState<Method>("cbu");
   const [seller, setSeller] = useState<Vendor | null>(null);
@@ -76,7 +82,7 @@ export default function P2PApp() {
   const vendorsRef = useRef<Vendor[]>([]);
   const myIdRef = useRef<string | null>(null);
   const isAdminRef = useRef(false);
-  const screenRef = useRef<Screen>("home");
+  const screenRef = useRef<Screen>(initialScreen);
 
   vendorsRef.current = vendors;
   myIdRef.current = myId;
@@ -104,21 +110,14 @@ export default function P2PApp() {
     show("wait", n);
   }, [show]);
 
-  // "Volver a la web": the seller panel is entered by hash only.
+  // "Volver a la web": the panel lives on its own route, so leave it for /p2p.
   const backToWeb = useCallback(() => {
-    if (window.location.hash) {
-      try {
-        history.replaceState(
-          null,
-          "",
-          window.location.pathname + window.location.search,
-        );
-      } catch {
-        /* ignore */
-      }
+    if (initialScreen === "seller") {
+      router.push("/p2p");
+      return;
     }
     show("home");
-  }, [show]);
+  }, [initialScreen, router, show]);
 
   const refreshQuote = useCallback(async () => {
     let quote: { btc: number; blue: number } | null = null;
@@ -251,8 +250,8 @@ export default function P2PApp() {
         setIsAdmin(true);
       }
 
-      // Restore an open order, unless the seller panel was requested by hash.
-      if (window.location.hash === "#" + PANEL_SECRETO) {
+      // The panel route boots straight into the seller screen.
+      if (initialScreen === "seller") {
         setHidden(false);
         show("seller");
         return;
@@ -296,7 +295,7 @@ export default function P2PApp() {
         }
       });
     };
-  }, [openOrder, refreshQuote, show]);
+  }, [initialScreen, openOrder, refreshQuote, show]);
 
   // Quote countdown: one tick per second, refresh every 60.
   useEffect(() => {
@@ -380,17 +379,12 @@ export default function P2PApp() {
       /* unsupported */
     }
     beep();
-    if (screenRef.current !== "seller") show("seller");
-  }, [allTx, myId, alertBar, show]);
-
-  // Hash entry point for the seller panel.
-  useEffect(() => {
-    const onHash = () => {
-      if (window.location.hash === "#" + PANEL_SECRETO) show("seller");
-    };
-    window.addEventListener("hashchange", onHash);
-    return () => window.removeEventListener("hashchange", onHash);
-  }, [show]);
+    // The panel lives at /p2p/panel now, so from the buyer route we go there.
+    if (screenRef.current !== "seller") {
+      if (initialScreen === "seller") show("seller");
+      else router.push("/p2p/panel");
+    }
+  }, [allTx, myId, alertBar, show, initialScreen, router]);
 
   // The admin's own ntfy channel is where new-vendor notices are sent.
   const myNtfy = myId
@@ -748,7 +742,8 @@ export default function P2PApp() {
 
         {screen === "seller" && (
           <SellerPanel
-            ready={ready && !!storeRef.current}
+            ready={ready}
+            hasStore={!!storeRef.current}
             myId={myId}
             isAdmin={isAdmin}
             vendors={vendors}

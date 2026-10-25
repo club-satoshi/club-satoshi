@@ -29,7 +29,6 @@ export const ROW_H = 48;
 export const PAY_REEL_H = 52;
 
 export const ORDER_KEY = "cs_pedido_activo";
-export const PANEL_SECRETO = "panel-cs";
 
 /** Kept at false, exactly as the original ships it. */
 export const MODO_PRUEBA = false;
