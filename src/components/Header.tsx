@@ -32,6 +32,7 @@ export default function Header() {
                     <Link href="/" className="hover:text-primary transition-colors">Inicio</Link>
                     <Link href="/#about" className="hover:text-primary transition-colors">Quienes somos</Link>
                     <Link href="/#resources" className="hover:text-primary transition-colors text-secondary dark:text-white">Recursos</Link>
+                    <Link href="/p2p" className="hover:text-primary transition-colors">P2P</Link>
                     <Link href="/comercios" className="hover:text-primary transition-colors">BTC Map</Link>
                     <Link href="/#contact" className="hover:text-primary transition-colors">Contacto</Link>
                 </nav>
@@ -65,6 +66,7 @@ export default function Header() {
                         <Link href="/" className="py-2 hover:text-primary" onClick={() => setIsMenuOpen(false)}>Inicio</Link>
                         <Link href="#about" className="py-2 hover:text-primary" onClick={() => setIsMenuOpen(false)}>Acerca de</Link>
                         <Link href="#resources" className="py-2 hover:text-primary" onClick={() => setIsMenuOpen(false)}>Recursos</Link>
+                        <Link href="/p2p" className="py-2 hover:text-primary" onClick={() => setIsMenuOpen(false)}>P2P</Link>
                         <Link href="/comercios" className="py-2 hover:text-primary" onClick={() => setIsMenuOpen(false)}>BTC Map</Link>
                         <Link href="#communities" className="py-2 hover:text-primary" onClick={() => setIsMenuOpen(false)}>Comunidades</Link>
                         <Link href="#contact" className="py-2 hover:text-primary" onClick={() => setIsMenuOpen(false)}>Contacto</Link>
