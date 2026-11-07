@@ -1,0 +1,10 @@
+# Dueños por defecto: revisan cualquier cambio.
+*                       @leoapz @clubsatoshi
+
+# Codigo y configuracion que pueden romper la pagina.
+/.github/               @leoapz @clubsatoshi
+/app/                   @leoapz @clubsatoshi
+/src/                   @leoapz @clubsatoshi
+/package.json           @leoapz @clubsatoshi
+/package-lock.json      @leoapz @clubsatoshi
+/next.config.mjs        @leoapz @clubsatoshi
