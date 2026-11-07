@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import Link from "next/link";
 import { BookOpen, Video, FileText, ShieldCheck } from "lucide-react";
 
@@ -61,7 +62,17 @@ export default function Resources() {
     );
 }
 
-function ResourceCard({ category, icon, title, description, color, delay, href }: any) {
+interface ResourceCardProps {
+    category: string;
+    icon: ReactNode;
+    title: string;
+    description: string;
+    color: string;
+    delay: string;
+    href: string;
+}
+
+function ResourceCard({ category, icon, title, description, color, delay, href }: ResourceCardProps) {
     return (
         <Link href={href} className="group block bg-white dark:bg-black p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 hover:shadow-md transition-all hover:-translate-y-1 animate-slide-up cursor-pointer" style={{ animationDelay: delay }}>
             <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold mb-4 ${color}`}>
