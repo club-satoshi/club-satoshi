@@ -1,7 +1,7 @@
 {
   "since": "2026-11-09T16:00:00Z",
   "received_sats": 0,
-  "balance_sats": 0,
-  "data_changed_at": "2026-11-09T15:57:49Z",
-  "checked_at": "2026-11-09T15:57:49Z"
+  "balance_sats": 100,
+  "data_changed_at": "2026-11-09T15:59:13Z",
+  "checked_at": "2026-11-09T15:59:13Z"
 }
