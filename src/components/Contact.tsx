@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Mail, ExternalLink } from "lucide-react";
+import SaldoDonaciones from "./SaldoDonaciones";
 
 export default function Contact() {
   return (
@@ -25,7 +26,7 @@ export default function Contact() {
               </Link>
               <div>
                 <a
-                  href="https://getalby.com/p/clubsatoshi"
+                  href="https://getalby.com/p/donacionesclubsatoshi"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-8 py-4 border-2 border-white text-white font-bold rounded-full hover:bg-white/10 transition-all hover:scale-105 text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-primary"
@@ -36,6 +37,7 @@ export default function Contact() {
                 <p className="mt-3 text-sm md:text-base text-white/90 leading-relaxed max-w-md">
                   Tu aporte ayuda a costear los eventos de la comunidad: materiales, insumos y lo que haga falta.
                 </p>
+                <SaldoDonaciones />
               </div>
             </div>
           </div>

@@ -1,0 +1,138 @@
+name: Donaciones
+
+# Publica los totales de la sub-wallet de donaciones en la rama huérfana `donaciones`.
+# Los logs de este repo son públicos: solo se imprimen los dos totales.
+#
+# Dos jobs: `calcular` corre código de terceros (@getalby/sdk) con el secret pero sin permiso
+# de escritura; `publicar` tiene permiso de escritura pero no ejecuta código de terceros y
+# valida el JSON antes de commitearlo.
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: donaciones
+  cancel-in-progress: false
+
+jobs:
+  calcular:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    # El secret NWC_URL vive en este Environment, restringido a la rama main.
+    environment: donaciones
+    permissions:
+      contents: read
+    outputs:
+      record: ${{ steps.resultado.outputs.record }}
+    steps:
+      - name: Checkout del recolector
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          sparse-checkout: scripts/donaciones
+
+      - name: Setup Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "22"
+
+      - name: Instalar dependencias
+        working-directory: scripts/donaciones
+        run: npm ci --ignore-scripts --no-audit --no-fund
+
+      - name: Leer datos publicados
+        run: |
+          set -euo pipefail
+          git init -q "$RUNNER_TEMP/datos"
+          cd "$RUNNER_TEMP/datos"
+          git remote add origin "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}.git"
+          set +e
+          git ls-remote --exit-code --heads origin donaciones >/dev/null
+          rc=$?
+          set -e
+          if [ "$rc" -eq 0 ]; then
+            git fetch -q --depth=1 origin donaciones
+            git checkout -q -b donaciones FETCH_HEAD
+          elif [ "$rc" -eq 2 ]; then
+            echo "La rama donaciones todavía no existe."
+          else
+            echo "No se pudo consultar el remoto."
+            exit 1
+          fi
+
+      - name: Calcular totales
+        working-directory: scripts/donaciones
+        env:
+          NWC_URL: ${{ secrets.NWC_URL }}
+        run: node --no-warnings src/main.mjs "$RUNNER_TEMP/datos/data/donaciones.json"
+
+      - name: Preparar resultado
+        id: resultado
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP/datos"
+          if [ -n "$(git status --porcelain -- data/donaciones.json)" ]; then
+            echo "record=$(jq -c . data/donaciones.json)" >> "$GITHUB_OUTPUT"
+          else
+            echo "Sin cambios: no se publica."
+          fi
+
+  publicar:
+    needs: calcular
+    if: needs.calcular.outputs.record != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - name: Validar y publicar
+        env:
+          RECORD: ${{ needs.calcular.outputs.record }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          printf '%s' "$RECORD" | jq -e '
+            def iso: type == "string" and test("^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$");
+            def sats: type == "number" and . >= 0 and . == floor and . < 2100000000000000;
+            type == "object"
+            and (keys == ["balance_sats", "checked_at", "data_changed_at", "received_sats", "since"])
+            and .since == "2026-11-09T16:00:00Z"
+            and (.received_sats | sats) and (.balance_sats | sats)
+            and (.data_changed_at | iso) and (.checked_at | iso)
+          ' >/dev/null || { echo "El resultado no tiene el formato esperado: no se publica."; exit 1; }
+
+          git init -q "$RUNNER_TEMP/datos"
+          cd "$RUNNER_TEMP/datos"
+          git remote add origin "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}.git"
+          set +e
+          git ls-remote --exit-code --heads origin donaciones >/dev/null
+          rc=$?
+          set -e
+          if [ "$rc" -eq 0 ]; then
+            git fetch -q --depth=1 origin donaciones
+            git checkout -q -b donaciones FETCH_HEAD
+          elif [ "$rc" -eq 2 ]; then
+            echo "La rama donaciones no existe: se crea huérfana."
+            git checkout -q --orphan donaciones
+          else
+            echo "No se pudo consultar el remoto."
+            exit 1
+          fi
+
+          mkdir -p data
+          printf '%s' "$RECORD" | jq . > data/donaciones.json
+          if [ -z "$(git status --porcelain -- data/donaciones.json)" ]; then
+            echo "Sin cambios: no se commitea."
+            exit 0
+          fi
+          git add data/donaciones.json
+          git -c user.name="github-actions[bot]" \
+              -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+              commit -q -m "chore(donaciones): actualizar totales"
+          auth="$(printf 'x-access-token:%s' "$GITHUB_TOKEN" | base64 -w0)"
+          echo "::add-mask::$auth"
+          git -c http.extraheader="AUTHORIZATION: basic $auth" push -q origin HEAD:refs/heads/donaciones
+          echo "Publicado en la rama donaciones."
