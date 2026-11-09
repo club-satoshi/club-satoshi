@@ -1,0 +1,81 @@
+name: Donaciones
+
+# Publica los totales de la sub-wallet de donaciones en la rama huérfana `donaciones`.
+# Los logs de este repo son públicos: solo se imprimen los dos totales.
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: donaciones
+  cancel-in-progress: false
+
+jobs:
+  actualizar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout del recolector
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          sparse-checkout: scripts/donaciones
+
+      - name: Setup Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "22"
+
+      - name: Instalar dependencias
+        working-directory: scripts/donaciones
+        run: npm ci --ignore-scripts --no-audit --no-fund
+
+      - name: Preparar rama donaciones
+        run: |
+          set -euo pipefail
+          git init -q "$RUNNER_TEMP/datos"
+          cd "$RUNNER_TEMP/datos"
+          git remote add origin "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}.git"
+          set +e
+          git ls-remote --exit-code --heads origin donaciones >/dev/null
+          rc=$?
+          set -e
+          if [ "$rc" -eq 0 ]; then
+            git fetch -q --depth=1 origin donaciones
+            git checkout -q -b donaciones FETCH_HEAD
+          elif [ "$rc" -eq 2 ]; then
+            echo "La rama donaciones no existe: se crea huérfana."
+            git checkout -q --orphan donaciones
+          else
+            echo "No se pudo consultar el remoto."
+            exit 1
+          fi
+
+      - name: Calcular totales
+        working-directory: scripts/donaciones
+        env:
+          NWC_URL: ${{ secrets.NWC_URL }}
+        run: node --no-warnings src/main.mjs "$RUNNER_TEMP/datos/data/donaciones.json"
+
+      - name: Publicar
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP/datos"
+          if [ -z "$(git status --porcelain -- data/donaciones.json)" ]; then
+            echo "Sin cambios: no se commitea."
+            exit 0
+          fi
+          git add data/donaciones.json
+          git -c user.name="github-actions[bot]" \
+              -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+              commit -q -m "chore(donaciones): actualizar totales"
+          auth="$(printf 'x-access-token:%s' "$GITHUB_TOKEN" | base64 -w0)"
+          echo "::add-mask::$auth"
+          git -c http.extraheader="AUTHORIZATION: basic $auth" push -q origin HEAD:refs/heads/donaciones
+          echo "Publicado en la rama donaciones."
