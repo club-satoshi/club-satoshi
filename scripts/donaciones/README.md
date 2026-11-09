@@ -11,7 +11,15 @@ Lo corre `.github/workflows/donaciones.yml` cada 30 minutos (y a mano con *Run w
 
 ## Secret
 
-En GitHub: *Settings → Secrets and variables → Actions → New repository secret*, nombre `NWC_URL`, valor `nostr+walletconnect://...`.
+El secret vive en el Environment `donaciones`, restringido a `main`, para que un workflow de otra rama no pueda leerlo:
+
+1. *Settings → Environments → New environment*, nombre `donaciones`.
+2. *Deployment branches and tags → Selected branches and tags → Add rule*: `main`.
+3. *Environment secrets → Add secret*: nombre `NWC_URL`, valor `nostr+walletconnect://...`.
+
+No lo cargues como secret de repositorio.
+
+El workflow tiene dos jobs: `calcular` corre el SDK con el secret y permiso de solo lectura; `publicar` tiene permiso de escritura, no ejecuta código de terceros y valida el JSON antes de commitearlo.
 
 La conexión NWC tiene que tener solo los permisos de leer saldo, listar transacciones y crear facturas. Nunca permisos de pago.
 
