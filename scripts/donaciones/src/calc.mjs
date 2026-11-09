@@ -1,4 +1,3 @@
-export const SINCE = "2026-11-09T16:00:00Z";
 export const PAGE_SIZE = 50;
 export const MAX_PAGES = 200;
 export const REFRESH_MS = 2 * 60 * 60 * 1000;
@@ -25,12 +24,6 @@ export function msatToSat(msat) {
   return Math.floor(msat / 1000);
 }
 
-export function toUnixSeconds(iso) {
-  const ms = Date.parse(iso);
-  if (Number.isNaN(ms)) throw new DatosInconsistentes("fecha inválida");
-  return Math.floor(ms / 1000);
-}
-
 function assertTransaction(tx) {
   if (!tx || typeof tx !== "object") throw new DatosInconsistentes("transacción inválida");
   if (!TX_TYPES.has(tx.type)) throw new DatosInconsistentes("tipo de transacción inválido");
@@ -39,9 +32,6 @@ function assertTransaction(tx) {
     throw new DatosInconsistentes("payment_hash inválido");
   }
   assertMsat(tx.amount, "amount");
-  if (tx.state === "settled" && (!Number.isSafeInteger(tx.settled_at) || tx.settled_at <= 0)) {
-    throw new DatosInconsistentes("settled_at inválido");
-  }
 }
 
 /**
@@ -75,11 +65,11 @@ export async function fetchIncomingTransactions(
   throw new DatosInconsistentes("se superó el máximo de páginas");
 }
 
-export function sumReceivedMsat(transactions, sinceUnix) {
+export function sumReceivedMsat(transactions) {
   let total = 0;
   for (const tx of transactions) {
     assertTransaction(tx);
-    if (tx.type === "incoming" && tx.state === "settled" && tx.settled_at >= sinceUnix) {
+    if (tx.type === "incoming" && tx.state === "settled") {
       total += tx.amount;
     }
   }
@@ -87,9 +77,7 @@ export function sumReceivedMsat(transactions, sinceUnix) {
   return total;
 }
 
-export async function computeTotals(client, { since = SINCE, pageSize, maxPages } = {}) {
-  const sinceUnix = toUnixSeconds(since);
-
+export async function computeTotals(client, { pageSize, maxPages } = {}) {
   const balanceResponse = await client.getBalance();
   assertMsat(balanceResponse?.balance, "balance");
 
@@ -99,7 +87,7 @@ export async function computeTotals(client, { since = SINCE, pageSize, maxPages 
   );
 
   return {
-    received_sats: msatToSat(sumReceivedMsat(transactions, sinceUnix)),
+    received_sats: msatToSat(sumReceivedMsat(transactions)),
     balance_sats: msatToSat(balanceResponse.balance),
   };
 }
@@ -108,11 +96,13 @@ function isoSeconds(date) {
   return date.toISOString().replace(/\.\d{3}Z$/, "Z");
 }
 
+const RECORD_KEYS = ["balance_sats", "checked_at", "data_changed_at", "received_sats"];
+
 function parsePrevious(previous) {
   if (!previous || typeof previous !== "object") return null;
-  const { since, received_sats, balance_sats, data_changed_at, checked_at } = previous;
+  const { received_sats, balance_sats, data_changed_at, checked_at } = previous;
   if (
-    typeof since !== "string" ||
+    Object.keys(previous).sort().join() !== RECORD_KEYS.join() ||
     !Number.isSafeInteger(received_sats) ||
     !Number.isSafeInteger(balance_sats) ||
     Number.isNaN(Date.parse(data_changed_at)) ||
@@ -127,13 +117,12 @@ function parsePrevious(previous) {
  * Devuelve el nuevo contenido de donaciones.json, o null si no hace falta commitear:
  * solo se reescribe si cambió algún número o si `checked_at` tiene más de REFRESH_MS.
  */
-export function buildRecord(previous, totals, now, { since = SINCE, refreshMs = REFRESH_MS } = {}) {
+export function buildRecord(previous, totals, now, { refreshMs = REFRESH_MS } = {}) {
   const prev = parsePrevious(previous);
   const nowIso = isoSeconds(now);
 
   const changed =
     !prev ||
-    prev.since !== since ||
     prev.received_sats !== totals.received_sats ||
     prev.balance_sats !== totals.balance_sats;
   const stale = !prev || now.getTime() - Date.parse(prev.checked_at) > refreshMs;
@@ -141,7 +130,6 @@ export function buildRecord(previous, totals, now, { since = SINCE, refreshMs = 
   if (!changed && !stale) return null;
 
   return {
-    since,
     received_sats: totals.received_sats,
     balance_sats: totals.balance_sats,
     data_changed_at: changed ? nowIso : prev.data_changed_at,

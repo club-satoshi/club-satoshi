@@ -3,7 +3,7 @@
 Lee la sub-wallet de donaciones de Alby Hub por Nostr Wallet Connect (NWC) con `@getalby/sdk` y publica dos totales en la rama huérfana `donaciones`, que la web consume desde `raw.githubusercontent.com`.
 
 - `balance_sats`: saldo actual de la sub-wallet (`get_balance`).
-- `received_sats`: suma de las transacciones entrantes y liquidadas (`settled_at`) desde `2026-11-09T16:00:00Z`, recorriendo todas las páginas de `list_transactions`.
+- `received_sats`: suma de todas las transacciones entrantes y liquidadas de la sub-wallet, sin fecha de corte, recorriendo todas las páginas de `list_transactions`.
 
 NWC devuelve los montos en milisatoshis; se suman en msat y se convierten a sats redondeando hacia abajo. Si NWC falla, no responde a tiempo o devuelve algo inconsistente, el script no escribe nada y termina con error.
 
@@ -40,7 +40,6 @@ Archivo `data/donaciones.json` en la rama `donaciones` (lo único que contiene e
 
 ```json
 {
-  "since": "2026-11-09T16:00:00Z",
   "received_sats": 0,
   "balance_sats": 0,
   "data_changed_at": "2026-11-09T16:30:00Z",

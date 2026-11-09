@@ -98,8 +98,7 @@ jobs:
             def iso: type == "string" and test("^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$");
             def sats: type == "number" and . >= 0 and . == floor and . < 2100000000000000;
             type == "object"
-            and (keys == ["balance_sats", "checked_at", "data_changed_at", "received_sats", "since"])
-            and .since == "2026-11-09T16:00:00Z"
+            and (keys == ["balance_sats", "checked_at", "data_changed_at", "received_sats"])
             and (.received_sats | sats) and (.balance_sats | sats)
             and (.data_changed_at | iso) and (.checked_at | iso)
           ' >/dev/null || { echo "El resultado no tiene el formato esperado: no se publica."; exit 1; }
