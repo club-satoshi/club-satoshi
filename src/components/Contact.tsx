@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Mail, ExternalLink } from "lucide-react";
 import SaldoDonaciones from "./SaldoDonaciones";
+import { ALBY_URL } from "@/lib/donaciones";
 
 export default function Contact() {
   return (
@@ -24,9 +25,9 @@ export default function Contact() {
               >
                 Quiero unirme
               </Link>
-              <div>
+              <div id="donar" className="scroll-mt-24">
                 <a
-                  href="https://getalby.com/p/donacionesclubsatoshi"
+                  href={ALBY_URL}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-8 py-4 border-2 border-white text-white font-bold rounded-full hover:bg-white/10 transition-all hover:scale-105 text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-primary"
