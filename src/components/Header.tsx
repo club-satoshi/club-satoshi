@@ -3,11 +3,23 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Menu, X, XIcon } from "lucide-react";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { getAssetPath } from "@/utils/assets";
+import DonarButton from "./DonarButton";
 
 export default function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isDonarOpen, setIsDonarOpen] = useState(false);
+
+    function toggleMenu() {
+        setIsDonarOpen(false);
+        setIsMenuOpen((open) => !open);
+    }
+
+    const handleDonarOpenChange = useCallback((open: boolean) => {
+        if (open) setIsMenuOpen(false);
+        setIsDonarOpen(open);
+    }, []);
 
     return (
         <header className="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-md border-b border-gray-100 dark:bg-black/80 dark:border-gray-800 transition-colors">
@@ -37,25 +49,30 @@ export default function Header() {
                 </nav>
 
                 {/* Actions */}
-                <div className="hidden md:flex items-center gap-3">
-                    <Link href="https://x.com/ClubSatoshi_" className="w-8 h-8 rounded-full bg-gray-100 dark:bg-white/10 flex items-center justify-center hover:bg-primary hover:text-white transition-colors text-gray-600 dark:text-gray-300">
-                        <XIcon className="w-4 h-4" />
-                    </Link>
-                    <Link href="https://www.instagram.com/club.satoshi/" className="w-8 h-8 rounded-full bg-gray-100 dark:bg-white/10 flex items-center justify-center hover:bg-primary hover:text-white transition-colors text-gray-600 dark:text-gray-300">
-                        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
-                    </Link>
-                    <Link href="/unirse" className="px-4 py-2 bg-primary text-white text-sm font-bold rounded-full hover:bg-primary-hover transition-colors shadow-lg shadow-orange-500/20">
+                <div className="flex items-center gap-2 md:gap-3">
+                    <div className="hidden md:flex items-center gap-3">
+                        <Link href="https://x.com/ClubSatoshi_" className="w-8 h-8 rounded-full bg-gray-100 dark:bg-white/10 flex items-center justify-center hover:bg-primary hover:text-white transition-colors text-gray-600 dark:text-gray-300">
+                            <XIcon className="w-4 h-4" />
+                        </Link>
+                        <Link href="https://www.instagram.com/club.satoshi/" className="w-8 h-8 rounded-full bg-gray-100 dark:bg-white/10 flex items-center justify-center hover:bg-primary hover:text-white transition-colors text-gray-600 dark:text-gray-300">
+                            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+                        </Link>
+                    </div>
+                    <DonarButton open={isDonarOpen} onOpenChange={handleDonarOpenChange} />
+                    <Link href="/unirse" className="hidden md:inline-flex px-4 py-2 bg-primary text-white text-sm font-bold rounded-full hover:bg-primary-hover transition-colors shadow-lg shadow-orange-500/20">
                         Unirse al Club
                     </Link>
-                </div>
 
-                {/* Mobile Menu Button */}
-                <button
-                    className="md:hidden p-2 text-gray-600 dark:text-gray-300"
-                    onClick={() => setIsMenuOpen(!isMenuOpen)}
-                >
-                    {isMenuOpen ? <X /> : <Menu />}
-                </button>
+                    {/* Mobile Menu Button */}
+                    <button
+                        className="md:hidden p-2 text-gray-600 dark:text-gray-300"
+                        onClick={toggleMenu}
+                        aria-label={isMenuOpen ? "Cerrar menú" : "Abrir menú"}
+                        aria-expanded={isMenuOpen}
+                    >
+                        {isMenuOpen ? <X /> : <Menu />}
+                    </button>
+                </div>
             </div>
 
             {/* Mobile Navigation */}

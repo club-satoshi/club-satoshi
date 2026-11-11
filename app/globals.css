@@ -96,3 +96,41 @@ h6 {
     background-position: 350% 50%, 350% 50%;
   }
 }
+
+/* Botón "Donar" del header: destello sutil del rayo cada pocos segundos */
+@utility animate-zap {
+  animation: zap 3.5s ease-in-out infinite;
+}
+
+@utility animate-pop-in {
+  animation: popIn 160ms ease-out;
+  transform-origin: top right;
+}
+
+@keyframes zap {
+  0%, 70%, 100% {
+    transform: scale(1) rotate(0deg);
+    filter: drop-shadow(0 0 0 rgba(247, 147, 26, 0));
+  }
+
+  78% {
+    transform: scale(1.2) rotate(-8deg);
+    filter: drop-shadow(0 0 6px rgba(247, 147, 26, 0.8));
+  }
+
+  86% {
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
