@@ -111,7 +111,7 @@ export default function DonarButton({ open, onOpenChange }: Props) {
                 recibidos
               </p>
               <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
-                Datos públicos · actualizado {haceCuanto(donaciones.edad)}
+                Actualizado {haceCuanto(donaciones.edad)} · puede demorar en reflejarse
               </p>
             </div>
           )}

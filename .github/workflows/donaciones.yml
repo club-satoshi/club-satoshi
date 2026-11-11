@@ -8,7 +8,7 @@ name: Donaciones
 # valida el JSON antes de commitearlo.
 on:
   schedule:
-    - cron: "*/30 * * * *"
+    - cron: "13,43 * * * *"
   workflow_dispatch:
 
 permissions: {}

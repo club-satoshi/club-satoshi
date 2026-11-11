@@ -18,7 +18,9 @@ export default function SaldoDonaciones() {
       <p>
         Saldo disponible: <span className="font-bold text-white">{formatSats(data.balance_sats)} sats</span>
       </p>
-      <p className="mt-2 text-xs md:text-sm text-white/70">Actualizado: {haceCuanto(edad)}</p>
+      <p className="mt-2 text-xs md:text-sm text-white/70">
+        Actualizado {haceCuanto(edad)} · Los nuevos aportes pueden demorar en verse reflejados.
+      </p>
       {stale && (
         <p className="mt-1 text-xs md:text-sm text-white/70">El dato puede estar desactualizado.</p>
       )}
