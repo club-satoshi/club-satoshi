@@ -1,7 +1,7 @@
 name: Donaciones
 
-# Publica los totales de la sub-wallet de donaciones en la rama huérfana `donaciones`.
-# Los logs de este repo son públicos: solo se imprimen los dos totales.
+# Publica los totales y el historial de la sub-wallet de donaciones en la rama huérfana `donaciones`.
+# Los logs de este repo son públicos: solo se imprimen los dos totales, nunca mensajes ni facturas.
 #
 # Dos jobs: `calcular` corre código de terceros (@getalby/sdk) con el secret pero sin permiso
 # de escritura; `publicar` tiene permiso de escritura pero no ejecuta código de terceros y
@@ -97,10 +97,21 @@ jobs:
           printf '%s' "$RECORD" | jq -e '
             def iso: type == "string" and test("^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$");
             def sats: type == "number" and . >= 0 and . == floor and . < 2100000000000000;
+            def item:
+              type == "object"
+              and ((keys - ["mensaje"]) == ["id", "sats", "settled_at"])
+              and (.id | type == "string" and test("^[0-9a-f]{12}$"))
+              and (.sats | sats)
+              and (.settled_at | iso)
+              and ((has("mensaje") | not) or (
+                .mensaje | type == "string" and length >= 1 and length <= 280
+                and (contains("\n") | not) and (contains("\r") | not)
+              ));
             type == "object"
-            and (keys == ["balance_sats", "checked_at", "data_changed_at", "received_sats"])
+            and (keys == ["balance_sats", "checked_at", "data_changed_at", "donaciones", "received_sats"])
             and (.received_sats | sats) and (.balance_sats | sats)
             and (.data_changed_at | iso) and (.checked_at | iso)
+            and (.donaciones | type == "array" and length <= 50 and all(.[]; item))
           ' >/dev/null || { echo "El resultado no tiene el formato esperado: no se publica."; exit 1; }
 
           git init -q "$RUNNER_TEMP/datos"

@@ -1,9 +1,11 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
+  buildHistorial,
   buildRecord,
   computeTotals,
   DatosInconsistentes,
+  donacionId,
   fetchIncomingTransactions,
   msatToSat,
   sumReceivedMsat,
@@ -137,7 +139,10 @@ test("computeTotals combina saldo y recibido en sats", async () => {
 
   const totals = await computeTotals(client, { pageSize: 50 });
 
-  assert.deepEqual(totals, { received_sats: 1111, balance_sats: 21_000 });
+  assert.equal(totals.received_sats, 1111);
+  assert.equal(totals.balance_sats, 21_000);
+  assert.equal(totals.donaciones.length, 50);
+  assert.ok(totals.donaciones.every((d) => d.sats === 1 && !d.mensaje));
 });
 
 test("computeTotals falla si el saldo es inválido", async () => {
@@ -145,31 +150,31 @@ test("computeTotals falla si el saldo es inválido", async () => {
   await assert.rejects(computeTotals(client), DatosInconsistentes);
 });
 
+const vacio = { received_sats: 10, balance_sats: 5, donaciones: [] };
+
 test("buildRecord crea el archivo cuando no hay datos previos", () => {
   const now = new Date("2026-11-09T18:00:00.123Z");
-  assert.deepEqual(buildRecord(null, { received_sats: 10, balance_sats: 5 }, now), {
-    received_sats: 10,
-    balance_sats: 5,
+  assert.deepEqual(buildRecord(null, vacio, now), {
+    ...vacio,
     data_changed_at: "2026-11-09T18:00:00Z",
     checked_at: "2026-11-09T18:00:00Z",
   });
 });
 
 const previous = {
-  received_sats: 10,
-  balance_sats: 5,
+  ...vacio,
   data_changed_at: "2026-11-09T17:00:00Z",
   checked_at: "2026-11-09T18:00:00Z",
 };
 
 test("buildRecord no reescribe si nada cambió y el chequeo es reciente", () => {
   const now = new Date("2026-11-09T20:00:00Z");
-  assert.equal(buildRecord(previous, { received_sats: 10, balance_sats: 5 }, now), null);
+  assert.equal(buildRecord(previous, vacio, now), null);
 });
 
 test("buildRecord refresca checked_at pasadas 2 horas sin tocar data_changed_at", () => {
   const now = new Date("2026-11-09T20:00:01Z");
-  assert.deepEqual(buildRecord(previous, { received_sats: 10, balance_sats: 5 }, now), {
+  assert.deepEqual(buildRecord(previous, vacio, now), {
     ...previous,
     checked_at: "2026-11-09T20:00:01Z",
   });
@@ -177,7 +182,7 @@ test("buildRecord refresca checked_at pasadas 2 horas sin tocar data_changed_at"
 
 test("buildRecord actualiza data_changed_at cuando cambia un número", () => {
   const now = new Date("2026-11-09T18:30:00Z");
-  assert.deepEqual(buildRecord(previous, { received_sats: 10, balance_sats: 4 }, now), {
+  assert.deepEqual(buildRecord(previous, { ...vacio, balance_sats: 4 }, now), {
     ...previous,
     balance_sats: 4,
     data_changed_at: "2026-11-09T18:30:00Z",
@@ -194,10 +199,115 @@ test("buildRecord trata un archivo previo malformado como inexistente", () => {
 test("buildRecord reescribe un archivo con el formato anterior (con since)", () => {
   const now = new Date("2026-11-09T18:30:00Z");
   const old = { since: "2026-11-09T16:00:00Z", ...previous };
-  assert.deepEqual(buildRecord(old, { received_sats: 10, balance_sats: 5 }, now), {
-    received_sats: 10,
-    balance_sats: 5,
+  assert.deepEqual(buildRecord(old, vacio, now), {
+    ...vacio,
     data_changed_at: "2026-11-09T18:30:00Z",
     checked_at: "2026-11-09T18:30:00Z",
   });
+});
+
+test("buildRecord reescribe un archivo sin historial", () => {
+  const now = new Date("2026-11-09T18:30:00Z");
+  const { donaciones: _lista, ...sinHistorial } = previous;
+  assert.equal(buildRecord(sinHistorial, vacio, now).data_changed_at, "2026-11-09T18:30:00Z");
+});
+
+const aporte = {
+  id: "0123456789ab",
+  sats: 500,
+  settled_at: "2026-11-21T23:59:00Z",
+  mensaje: "Saludos desde Myto 21/11/2026",
+};
+
+test("buildRecord actualiza data_changed_at cuando solo cambia el historial", () => {
+  const now = new Date("2026-11-09T18:30:00Z");
+  assert.deepEqual(buildRecord(previous, { ...vacio, donaciones: [aporte] }, now), {
+    ...previous,
+    donaciones: [aporte],
+    data_changed_at: "2026-11-09T18:30:00Z",
+    checked_at: "2026-11-09T18:30:00Z",
+  });
+});
+
+test("buildHistorial publica el comentario una sola vez y descarta datos del pagador", () => {
+  const paymentHash = "hash-myto";
+  const [item] = buildHistorial([
+    tx({
+      payment_hash: paymentHash,
+      amount: 500_000,
+      invoice: "lnbc-no-publicar",
+      preimage: "preimage-no-publicar",
+      description: "Saludos desde Myto 21/11/2026",
+      metadata: {
+        comment: "Saludos desde Myto 21/11/2026",
+        payer_data: { email: "secreto@ejemplo.com", name: "Ada", pubkey: "npubsecreto" },
+      },
+      settled_at: Math.floor(Date.parse("2026-11-21T23:59:00Z") / 1000),
+    }),
+  ]);
+
+  assert.deepEqual(item, {
+    id: donacionId(paymentHash),
+    sats: 500,
+    settled_at: "2026-11-21T23:59:00Z",
+    mensaje: "Saludos desde Myto 21/11/2026",
+  });
+  const serializado = JSON.stringify(item);
+  assert.equal(serializado.includes("secreto@ejemplo.com"), false);
+  assert.equal(serializado.includes("preimage-no-publicar"), false);
+  assert.equal(serializado.includes("lnbc-no-publicar"), false);
+  assert.equal(serializado.includes(paymentHash), false);
+});
+
+test("buildHistorial usa la descripción si no hay comentario", () => {
+  const [item] = buildHistorial([
+    tx({ description: "  gracias\npor el encuentro  ", metadata: { comment: "" } }),
+  ]);
+  assert.equal(item.mensaje, "gracias por el encuentro");
+});
+
+test("buildHistorial descarta memos que no son un mensaje", () => {
+  const lista = buildHistorial([
+    tx({ description: '{"content":"zap"}', amount: 2_000 }),
+    tx({ description: "lnbc1pjsecreta", amount: 3_000 }),
+    tx({ description: "https://ejemplo.com/pago", amount: 4_000 }),
+    tx({ metadata: { comment: `<b>${"a".repeat(281)}</b>` }, description: "queda este", amount: 5_000 }),
+  ]);
+  assert.equal(lista.length, 4);
+  assert.deepEqual(
+    lista.filter((item) => item.mensaje).map((item) => item.mensaje),
+    ["queda este"],
+  );
+});
+
+test("buildHistorial limpia HTML y espacios del comentario", () => {
+  const [item] = buildHistorial([
+    tx({ metadata: { comment: "  Hola\n<b>club</b>  " }, description: "otro" }),
+  ]);
+  assert.equal(item.mensaje, "Hola club");
+});
+
+test("buildHistorial omite polvo sin mensaje, oculta ids y se queda con los más nuevos", () => {
+  const oculto = tx({ payment_hash: "ocultame", amount: 9_000, settled_at: T0 + 100 });
+  const polvo = tx({ payment_hash: "polvo", amount: 500, settled_at: T0 + 90 });
+  const conMensaje = tx({
+    payment_hash: "con-mensaje",
+    amount: 100,
+    settled_at: T0 + 80,
+    metadata: { comment: "hola" },
+  });
+  const recientes = Array.from({ length: 50 }, (_, i) =>
+    tx({ payment_hash: `reciente-${i}`, amount: 1_000, settled_at: T0 + i }),
+  );
+
+  const lista = buildHistorial([oculto, polvo, conMensaje, ...recientes], {
+    hiddenIds: new Set([donacionId("ocultame")]),
+  });
+
+  assert.equal(lista.some((item) => item.id === donacionId("ocultame")), false);
+  assert.equal(lista.some((item) => item.id === donacionId("polvo")), false);
+  assert.equal(lista.some((item) => item.mensaje === "hola" && item.sats === 0), true);
+  assert.equal(lista.length, 50);
+  assert.equal(lista[0].settled_at > lista.at(-1).settled_at, true);
+  assert.equal(lista.some((item) => item.id === donacionId("reciente-0")), false);
 });

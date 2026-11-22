@@ -4,6 +4,7 @@ import { mkdtemp, readFile, rm, stat } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { run } from "../src/main.mjs";
+import { donacionId } from "../src/calc.mjs";
 
 const FAKE_URL = "nostr+walletconnect://abc?relay=wss://relay.example&secret=supersecreto";
 
@@ -45,6 +46,11 @@ test("run escribe el archivo e imprime solo los dos totales", async () => {
             payment_hash: "h1",
             preimage: "preimage-secreta",
             invoice: "lnbc-factura",
+            description: "Saludos desde Myto 21/11/2026",
+            metadata: {
+              comment: "Saludos desde Myto 21/11/2026",
+              payer_data: { email: "secreto@ejemplo.com" },
+            },
             amount: 21_000,
             settled_at: Date.parse("2026-11-10T00:00:00Z") / 1000,
           },
@@ -71,6 +77,19 @@ test("run escribe el archivo e imprime solo los dos totales", async () => {
     const saved = JSON.parse(await readFile(outputPath, "utf8"));
     assert.equal(saved.received_sats, 21);
     assert.equal(saved.balance_sats, 42);
+    assert.deepEqual(saved.donaciones, [
+      {
+        id: donacionId("h1"),
+        sats: 21,
+        settled_at: "2026-11-10T00:00:00Z",
+        mensaje: "Saludos desde Myto 21/11/2026",
+      },
+    ]);
+    const texto = JSON.stringify(saved);
+    assert.equal(texto.includes("preimage-secreta"), false);
+    assert.equal(texto.includes("lnbc-factura"), false);
+    assert.equal(texto.includes("secreto@ejemplo.com"), false);
+    assert.equal(out.lines.join("\n").includes("Saludos desde Myto"), false);
   });
 });
 

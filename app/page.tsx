@@ -2,6 +2,7 @@ import Hero from "@/components/Hero";
 import About from "@/components/About";
 import Resources from "@/components/Resources";
 import BitcoinMap from "@/components/BitcoinMap";
+import HistorialDonaciones from "@/components/HistorialDonaciones";
 import Contact from "@/components/Contact";
 
 export default function Home() {
@@ -12,6 +13,7 @@ export default function Home() {
       <Resources />
       {/* TODO: Should add Communities here */}
       <BitcoinMap />
+      <HistorialDonaciones />
       <Contact />
     </main>
   );

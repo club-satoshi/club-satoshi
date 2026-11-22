@@ -3,7 +3,7 @@ import { DATA_URL, STALE_MS, parseDonaciones, type Donaciones } from "./donacion
 
 export type DonacionesState =
   | { status: "idle" | "loading" | "error" }
-  | { status: "ok"; data: Donaciones; edad: number; stale: boolean };
+  | { status: "ok"; data: Donaciones; edad: number; stale: boolean; ahora: number };
 
 /**
  * Lee el total de donaciones publicado por el workflow `donaciones`.
@@ -47,7 +47,7 @@ export function useDonaciones(enabled = true): DonacionesState {
 
   if (data && now !== 0) {
     const edad = Math.max(0, now - Date.parse(data.checked_at));
-    return { status: "ok", data, edad, stale: edad > STALE_MS };
+    return { status: "ok", data, edad, stale: edad > STALE_MS, ahora: now };
   }
   if (!enabled && !settled) return { status: "idle" };
   return { status: settled ? "error" : "loading" };
