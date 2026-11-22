@@ -127,7 +127,7 @@ export default function DonarButton({ open, onOpenChange }: Props) {
             <ExternalLink className="w-4 h-4" aria-hidden="true" />
           </a>
           <Link
-            href="/#donaciones"
+            href="/donaciones"
             onClick={() => onOpenChange(false)}
             className="mt-3 block text-center text-xs font-medium text-gray-500 underline-offset-2 hover:text-primary hover:underline dark:text-gray-400"
           >
