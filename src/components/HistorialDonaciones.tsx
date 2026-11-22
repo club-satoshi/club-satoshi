@@ -59,6 +59,10 @@ export default function HistorialDonaciones() {
               <span className="mt-1 text-lg font-semibold tracking-wide text-orange-700 dark:text-primary md:text-2xl">
                 sats recibidos
               </span>
+              <span className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                Actualizado <time dateTime={state.data.checked_at}>{haceCuanto(state.edad)}</time>
+                {" · puede demorar en reflejarse"}
+              </span>
             </p>
           )}
           <p className="mx-auto max-w-2xl text-xl text-gray-500">
