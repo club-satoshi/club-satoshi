@@ -36,7 +36,11 @@ export default function Contact() {
                   <ExternalLink className="w-4 h-4" />
                 </a>
                 <p className="mt-3 text-sm md:text-base text-white/90 leading-relaxed max-w-md">
-                  Tu aporte ayuda a costear los eventos de la comunidad: materiales, insumos y lo que haga falta.
+                  Tu aporte ayuda a costear los eventos de la comunidad: materiales, insumos y lo que haga falta. Si dejás un mensaje, puede aparecer en el{" "}
+                  <Link href="/donaciones" className="underline underline-offset-2 hover:text-white">
+                    historial de aportes
+                  </Link>
+                  .
                 </p>
                 <SaldoDonaciones />
               </div>

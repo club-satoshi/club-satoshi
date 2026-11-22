@@ -93,7 +93,7 @@ export default function DonarButton({ open, onOpenChange }: Props) {
                 Apoyá a Club Satoshi
               </h2>
               <p className="mt-1 text-sm leading-relaxed text-gray-600 dark:text-gray-300">
-                Somos una comunidad voluntaria. Tu aporte en sats cubre eventos, materiales e insumos.
+                Somos una comunidad voluntaria. Tu aporte en sats cubre eventos, materiales e insumos. Si dejás un mensaje, puede aparecer en la página.
               </p>
             </div>
           </div>
@@ -127,7 +127,7 @@ export default function DonarButton({ open, onOpenChange }: Props) {
             <ExternalLink className="w-4 h-4" aria-hidden="true" />
           </a>
           <Link
-            href="/#donar"
+            href="/donaciones"
             onClick={() => onOpenChange(false)}
             className="mt-3 block text-center text-xs font-medium text-gray-500 underline-offset-2 hover:text-primary hover:underline dark:text-gray-400"
           >

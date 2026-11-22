@@ -1,7 +1,9 @@
 import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
-import { dirname } from "node:path";
-import { pathToFileURL } from "node:url";
+import { dirname, join } from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { buildRecord, computeTotals, DatosInconsistentes } from "./calc.mjs";
+
+const DEFAULT_OCULTOS_PATH = join(dirname(fileURLToPath(import.meta.url)), "..", "ocultos.json");
 
 const OVERALL_TIMEOUT_MS = 120_000;
 const NWC_PREFIX = "nostr+walletconnect://";
@@ -41,6 +43,29 @@ function withTimeout(promise, ms) {
   return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
 }
 
+const ID_OCULTO = /^[0-9a-f]{12}$/;
+
+/** Ids (sha256 truncado) que no se publican. Un archivo ausente no oculta nada. */
+export async function loadOcultos(path) {
+  let raw;
+  try {
+    raw = await readFile(path, "utf8");
+  } catch (error) {
+    if (error?.code === "ENOENT") return new Set();
+    throw error;
+  }
+  let parsed;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    throw new DatosInconsistentes("lista de ocultos inválida");
+  }
+  if (!Array.isArray(parsed) || parsed.some((id) => typeof id !== "string" || !ID_OCULTO.test(id))) {
+    throw new DatosInconsistentes("lista de ocultos inválida");
+  }
+  return new Set(parsed);
+}
+
 /** Devuelve el código de salida del proceso. Solo escribe `outputPath` si NWC respondió bien. */
 export async function run({
   nwcUrl,
@@ -50,6 +75,7 @@ export async function run({
   out = (line) => process.stdout.write(`${line}\n`),
   err = (line) => process.stderr.write(`${line}\n`),
   timeoutMs = OVERALL_TIMEOUT_MS,
+  ocultosPath = DEFAULT_OCULTOS_PATH,
 }) {
   if (!outputPath) {
     err("Error: falta la ruta de salida (uso: node src/main.mjs <ruta/donaciones.json>)");
@@ -60,11 +86,19 @@ export async function run({
     return 1;
   }
 
+  let hiddenIds;
+  try {
+    hiddenIds = await loadOcultos(ocultosPath);
+  } catch (error) {
+    err(`Error: ${describeError(error)}. No se escribió nada.`);
+    return 1;
+  }
+
   let client;
   let totals;
   try {
     client = await createClient(nwcUrl);
-    totals = await withTimeout(computeTotals(client), timeoutMs);
+    totals = await withTimeout(computeTotals(client, { hiddenIds }), timeoutMs);
   } catch (error) {
     err(`Error: ${describeError(error)}. No se escribió nada.`);
     return 1;
